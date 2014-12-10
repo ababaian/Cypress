@@ -237,9 +237,19 @@ awk -v RL="$READLEN" -v CHR="$CHR" -v STRAND="$STRAND" '{ \
 	# Junction Names
 	cut -f3 jnc.tmp | sed 's/^/>/g' - | paste -d'\n' - seq.fa.tmp > junction.fa
 
+	echo " Index the junctions file that was made"
+	samtools faidx junction.fa
+
+# Output Message
+	echo " Run complete."
+	echo " Output files are:"
+	echo "     junction.fa : Sequence file of splice junctions"
+	echo "     junction.bed : Bed file of splice junctions"
+
 #Cleanup
 	rm *.tmp
 
-
+# Splice O Matic Complete
+# 
 
 

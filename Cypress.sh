@@ -8,6 +8,8 @@
 
 LIBRARY=$1 # Library
 
+NAME=$(echo $LIBRARY | sed 's/\.bam//g' - )
+
 if [ ! -f $LIBRARY ]
 then
 	echo " Warning, the <Library.bam> file $LIBRARY, was not found"
@@ -36,12 +38,63 @@ then
 	exit 1
 fi
 
-READLEN=$4
+READLEN=$4 # Read Length
 
 if [ -z "$READLEN" ]
 then
 	echo " No read length set, using default 75"
 	READLEN=75
 fi
+
+echo " Cypress Analysis parameters valid."
+echo " Running with parameters..."
+echo "         Name: $NAME"
+echo "         Exon File: $EXONS"
+echo "         Genome: $GENOME"
+echo "         Readlength: $READLEN"
+echo ''
+
+# Script Core ==================================================================
+
+# Splice Junctions -------------------------------------------------------------
+# Run Splice O Matic to generate junction.bed // junction.fa
+	echo " Running Splice O Matic ..."
+	echo "      sh spliceOmatic.sh $EXONS $GENOME $READLEN "
+	echo ''
+
+	sh spliceOmatic.sh $EXONS $GENOME $READLEN
+
+if [ ! -f junction.bed ] || [ ! -f junction.fa ]
+then 
+	echo " Warning, either junction.bed or junction.fa was not generated"
+	echo " Check for errors in SpliceOMatic"
+	echo " Exiting"
+	exit 2
+fi
+
+# Index Jucntions
+# Splice Alignment -------------------------------------------------------------
+# Align reads in Library to the splice junctions generated from Splice O Matic
+#
+
+# Generate the fastq file if it doesn't exist
+if [ ! -f tempSort.1.fq ]
+then
+	# Sort the library (Require Samtools 1.1)
+	samtools sort -n -O 'bam' -T tempSort $LIBRARY > tempSort.bam
+
+	# Convert BAM file to FASTQ
+	bam2fastx -q -Q -A -P -N -o $NAME.fq tempSort.bam
+fi
+
+# Align reads to the the junctions
+	#tophat2 -p 1 -r 50 --report-secondary-alignments -g 1000 -o $PWD $GENOME temp.1.1fq temp.2.fq
+
+
+
+
+
+
+
 
 
