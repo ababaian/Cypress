@@ -58,11 +58,14 @@ echo ''
 
 # Splice Junctions -------------------------------------------------------------
 # Run Splice O Matic to generate junction.bed // junction.fa
+if [ ! -f junction.bed ] | [ ! -f junction.fa ]
+then
 	echo " Running Splice O Matic ..."
 	echo "      sh spliceOmatic.sh $EXONS $GENOME $READLEN "
 	echo ''
 
 	sh spliceOmatic.sh $EXONS $GENOME $READLEN
+fi
 
 if [ ! -f junction.bed ] || [ ! -f junction.fa ]
 then 
@@ -88,6 +91,9 @@ then
 fi
 
 # Align reads to the the junctions
+	bowtie2-build junction.fa junction
+
+	bowtie2 -x junction -p 2 -1 $NAME.1.fq -2 $NAME.2.fq --end-to-end -a -D 20 -R 3 -N 1 -L 20 -i S,1,0.50 --no-unal -S $NAME.jnc.sam
 	#tophat2 -p 1 -r 50 --report-secondary-alignments -g 1000 -o $PWD $GENOME temp.1.1fq temp.2.fq
 
 
