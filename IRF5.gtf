@@ -14,11 +14,12 @@ chr7	Annotation	5end	128578035	128578103	1	+	.	Nat3
 chr7	Annotation	5end	128578069	128578103	1	+	.	Nat4
 chr7	Annotation	5end	128578070	128578103	1	+	.	Nat5
 chr7	Annotation	5end	128578072	128578103	1	+	.	Nat6
-chr7	Assembly	int	128577785	128577888	2	+	.	ass_2
-chr7	Assembly	int	128579456	128579477	2	+	.	ex2
-chr7	Annotation	5end	128580726	128580930	1	+	.	Nat7
-chr7	Annotation	int	128581333	128581445	2	+	.	ex2
-chr7	Annotation	exon	128581333	128581479	2	+	.	ex2
+chr7	Assembly	5end	128577086	128577319	1	+	.	ass1
+chr7	Assembly	int	128577785	128577888	2	+	.	ass2
+chr7	Assembly	int	128579456	128579477	2	+	.	ass3
+chr7	Annotation	5end	128580726	128580930	1	+	.	nat7
+chr7	Annotation	int	128581333	128581445	2	+	.	rs2
+chr7	Annotation	int	128581333	128581479	2	+	.	rs3
 chr7	GENCODE	5end	128577665	128577888	1	+	.	gc1
 chr7	GENCODE	5end	128577990	128578103	1	+	.	gc2
 chr7	GENCODE	5end	128577993	128578103	1	+	.	gc3
