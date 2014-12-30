@@ -8,7 +8,7 @@
 
 LIBRARY=$1 # Library
 
-NAME=$(echo $LIBRARY | sed 's/\.bam//g' - )
+NAME=$2
 
 if [ ! -f $LIBRARY ]
 then
@@ -18,7 +18,7 @@ then
 	exit 1
 fi
 
-EXONS=$2 # Exon File
+EXONS=$3 # Exon File
 
 if [ ! -f $EXONS ]
 then
@@ -28,7 +28,7 @@ then
 	exit 1
 fi
 
-GENOME=$3 # Genome File
+GENOME=$4 # Genome File
 
 if [ ! -f $GENOME ]
 then 
@@ -38,7 +38,7 @@ then
 	exit 1
 fi
 
-READLEN=$4 # Read Length
+READLEN=$5 # Read Length
 
 if [ -z "$READLEN" ]
 then
@@ -47,7 +47,7 @@ then
 fi
 
 # Parent Directory
-parentDIR=$5
+parDIR=$6
 
 echo " Cypress initializing with parameters"
 echo "         Name: $NAME"
@@ -70,7 +70,7 @@ echo ''
 # Copy core files for running Cypress to the node
 	cp Cypress.sh /tmp/Cypress/Cypress.sh
 	cp spliceOmatic.sh /tmp/Cypress/spliceOmatic.sh
-	cp -L $EXON /tmp/Cypress/input.gtf
+	cp -L $EXONS /tmp/Cypress/input.gtf
 	cp -L $LIBRARY /tmp/Cypress/$NAME.bam
 
 # Move to temporary directory

@@ -13,7 +13,7 @@
 	# Input List
 	INLIST=$1
 
-	QSUB='qsub -S /bin/bash -V -l  mem_token=8G'
+	QSUB='qsub -q centos5.q -S /bin/bash -V -l  mem_token=8G'
 
 	# Exon GTF File
 	EXONS="$PWD/IRF5.gtf"
@@ -21,6 +21,9 @@
 	# Genome Input Fasta
 	GENOME="/home/ababaian/resources/genome/hg19r.fa"
 
+	# This Directory
+	HOMEDIR=$(pwd)
+	
 # Loop ================================
 
 # Number of Iterations
@@ -49,10 +52,10 @@ do
 	
 	# Run Cypress Branch on node
 	echo " Cufflinks Analysis"
-	echo "    Cyp_branch.sh $FPATH $EXONS $GENOME $READLEN $PWD"
+	echo "    Cyp_branch.sh $FPATH $NAME $EXONS $GENOME $READLEN $HOMEDIR"
 	
 	# Genesis/Apollo
-	$QSUB Cyp_branch.sh $FPATH $EXONS $GENOME $READLEN $PWD
+	$QSUB Cyp_branch.sh $FPATH $NAME $EXONS $GENOME $READLEN $HOMEDIR
 	
 	# Wait 2 minutes to offset genome reading
 	sleep 120s
