@@ -77,8 +77,21 @@ echo ''
 	cd /tmp/Cypress
 	samtools index $NAME.bam
 
+	echo " Cypress Branch has been initialized on the node"
+	echo " Folder contents are:"
+	ls -alh
+	echo ''
+	echo ''
+
+
 # Run Cypress locally (finaly)
+echo "Running Cypress:"
+echo "  sh Cypress.sh $NAME.bam input.gtf $GENOME $READLEN"
 sh Cypress.sh $NAME.bam input.gtf $GENOME $READLEN 
+
+echo " Post Cypress LS"
+
+ls -alh
 
 # Initilize output directory
 	mkdir $parDIR/$NAME

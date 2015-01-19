@@ -13,7 +13,8 @@
 	# Input List
 	INLIST=$1
 
-	QSUB='qsub -q centos5.q -S /bin/bash -V -l  mem_token=8G'
+	#QSUB='qsub -q centos5.q -S /bin/bash -V -l  mem_token=8G'
+	QSUB='qsub -S /bin/bash -V -l mem_free=10G -l mem_token=10G -l h_vmem=10G'
 
 	# Exon GTF File
 	EXONS="$PWD/IRF5.gtf"

@@ -49,9 +49,11 @@ fi
 echo " Cypress Analysis parameters valid."
 echo " Running with parameters..."
 echo "         Name: $NAME"
+echo "         Library: $LIBRARY"
 echo "         Exon File: $EXONS"
 echo "         Genome: $GENOME"
 echo "         Readlength: $READLEN"
+echo "         Current Directory: $PWD"
 echo ''
 
 # Script Core ==================================================================
@@ -75,16 +77,34 @@ then
 	exit 2
 fi
 
+# Samtools localization
+# use local
+	samtools='/home/ababaian/bin/samtools'
+
 # Index Jucntions
 # Splice Alignment -------------------------------------------------------------
 # Align reads in Library to the splice junctions generated from Splice O Matic
 #
 
 # Generate the fastq file if it doesn't exist
-if [ ! -f tempSort.1.fq ]
+if [ ! -f $NAME.1.fq ]
 then
+	echo ' Fastq file not found for the library so its goign to be generated'
+
 	# Sort the library (Require Samtools 1.1)
-	samtools sort -n -O 'bam' -T tempSort $LIBRARY > tempSort.bam
+	#$samtools sort -n -O 'bam' -T tempSort $LIBRARY > tempSort.bam
+	
+	# Samtools pre 1.1
+	samtools sort -n $LIBRARY tempSort
+
+	echo ' Post sort ls'
+	ls -alh
+	
+	if [ ! -f tempSort.bam ]
+	then
+		echo ' tempSort.bam not generated! Error 3!'
+		exit 3
+	fi
 
 	# Convert BAM file to FASTQ
 	bam2fastx -q -Q -A -P -N -o $NAME.fq tempSort.bam
@@ -94,22 +114,27 @@ fi
 	bowtie2-build junction.fa junction
 
 	# High fidelity setting
-	#bowtie2 -x junction -p 2 -1 $NAME.1.fq -2 $NAME.2.fq --end-to-end -a -D 20 -R 3 -N 1 -L 20 -i S,1,0.50 --no-unal -S $NAME.jnc.sam
+	bowtie2 -x junction -p 2 -1 $NAME.1.fq -2 $NAME.2.fq --end-to-end -a -D 20 -R 3 -N 1 -L 20 -i S,1,0.50 --no-unal -S $NAME.jnc.sam
 
 	# Normal Fidelity
 	#bowtie2 -x junction -p 2 -1 $NAME.1.fq -2 $NAME.2.fq --end-to-end -a -D 15 -R 2 -L 22 -i S,1,1.15 --no-unal -S $NAME.jnc.sam
 
 	# Normal Fidelity only primary alignments
-	bowtie2 -x junction -p 2 -1 $NAME.1.fq -2 $NAME.2.fq --end-to-end -a -D 15 -R 2 -L 22 -i S,1,1.15 --no-unal -S $NAME.jnc.sam
+	#bowtie2 -x junction -p 2 -1 $NAME.1.fq -2 $NAME.2.fq --end-to-end -a -D 15 -R 2 -L 22 -i S,1,1.15 --no-unal -S $NAME.jnc.sam
 
+
+	echo ' Post alignment ls'
+	ls -alh
 
 	# Convert sam file into a bam file
-	samtools sort -O 'bam' -T tempspace.tmp -o junction.bam $NAME.jnc.sam
+	$samtools sort -O 'bam' -T tempspace.tmp -o junction.bam $NAME.jnc.sam
 
 	# Retain only primary reads
-	samtools view -F 256 junction.bam -b -o junction.primary.bam
-	samtools index junction.primary.bam
+	$samtools view -F 256 junction.bam -b -o junction.primary.bam
+	$samtools index junction.primary.bam
 
+	echo ' Post processing/sorting ls'
+	ls -alh
 # Analysis of Alignments -------------------------------------------------------
 
 cut -f4 junction.bed | awk -v RL="$READLEN" '{ \
@@ -162,7 +187,7 @@ do
 
 		# Extract the number of reads over the splice junction
 		LookUp=$(echo "$DonerName\t$AcceptName")
-		SpliceScore=$(grep "$LookUp" junctionCoverage.tmp | cut -f3 - )
+		SpliceScore=$(grep -P "$LookUp" junctionCoverage.tmp | cut -f3 - )
 
 		if [ "$SpliceScore" = '' ]
 		then
@@ -184,7 +209,7 @@ do
 done
 
 mv doner.tmp  doner.txt
-mv accept.tmp doner.txt 
+mv accept.tmp accept.txt 
 rm *.tmp
 
 # End of script ; )
